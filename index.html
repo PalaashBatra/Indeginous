@@ -25,16 +25,30 @@
       const messageForm = document.getElementById('messageForm');
       const newMessageInput = document.getElementById('newMessageInput');
 
+      // Array to store the messages
+      let messages = [];
+
       messageForm.addEventListener('submit', function (e) {
         e.preventDefault();
         const newMessage = newMessageInput.value.trim();
         if (newMessage !== '') {
-          const li = document.createElement('li');
-          li.textContent = newMessage;
-          messageList.appendChild(li);
+          messages.push(newMessage);
+          updateMessageList();
           newMessageInput.value = '';
         }
       });
+
+      function updateMessageList() {
+        // Clear existing messages
+        messageList.innerHTML = '';
+
+        // Add each message to the list
+        messages.forEach(function (message) {
+          const li = document.createElement('li');
+          li.textContent = message;
+          messageList.appendChild(li);
+        });
+      }
     });
   </script>
 </body>
