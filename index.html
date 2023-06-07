@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Indigenous Interact Website</title>
+  <script src="https://cdn.jsdelivr.net/npm/@pusher/pusher-js@7.0.3/dist/web/pusher.min.js"></script>
 </head>
 
 <body>
@@ -25,15 +26,33 @@
       const messageForm = document.getElementById('messageForm');
       const newMessageInput = document.getElementById('newMessageInput');
 
+      // Initialize Pusher
+      const pusher = new Pusher('1614567', {
+        cluster: 'us2',
+        encrypted: true
+      });
+
+      // Subscribe to the 'chatroom' channel
+      const channel = pusher.subscribe('chatroom');
+
       // Array to store the messages
       let messages = [];
+
+      // Listen for new messages
+      channel.bind('new-message', function (data) {
+        const newMessage = data.message;
+        messages.push(newMessage);
+        updateMessageList();
+      });
 
       messageForm.addEventListener('submit', function (e) {
         e.preventDefault();
         const newMessage = newMessageInput.value.trim();
         if (newMessage !== '') {
-          messages.push(newMessage);
-          updateMessageList();
+          // Send the new message to the server
+          channel.trigger('client-new-message', {
+            message: newMessage
+          });
           newMessageInput.value = '';
         }
       });
