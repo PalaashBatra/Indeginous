@@ -27,7 +27,7 @@
       const newMessageInput = document.getElementById('newMessageInput');
 
       // Initialize Pusher
-      const pusher = new Pusher('1614567', {
+      const pusher = new Pusher('a2155cf1a0ead51bb9f1', {
         cluster: 'us2',
         encrypted: true
       });
@@ -68,6 +68,10 @@
           messageList.appendChild(li);
         });
       }
+
+      // Add an initial message
+      messages.push('Welcome to the chat room!');
+      updateMessageList();
     });
   </script>
 </body>
