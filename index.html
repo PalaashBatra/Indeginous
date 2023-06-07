@@ -5,13 +5,77 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Indigenous Interact Website</title>
-  <script src="https://cdn.jsdelivr.net/npm/@pusher/pusher-js@7.0.3/dist/web/pusher.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    #chatroom {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    #messageList {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #messageList li {
+      margin-bottom: 10px;
+    }
+
+    #messageForm {
+      display: flex;
+      margin-top: 10px;
+    }
+
+    #messageForm input[type="text"] {
+      flex: 1;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+
+    #messageForm button {
+      padding: 5px 10px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    #about {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    #about h2 {
+      color: #333;
+    }
+  </style>
+  <!-- Add the Firebase JavaScript library -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
 </head>
 
 <body>
   <h1>Welcome to the Indigenous Interact Website!</h1>
 
-  <div>
+  <div id="chatroom">
     <h2>Chat Room</h2>
     <ul id="messageList"></ul>
     <form id="messageForm">
@@ -20,27 +84,41 @@
     </form>
   </div>
 
+  <div id="about">
+    <h2>About</h2>
+    <p>This website is dedicated to providing a platform for Indigenous people to interact and connect with each other. Feel free to join the chat room and engage in meaningful discussions.</p>
+  </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const messageList = document.getElementById('messageList');
       const messageForm = document.getElementById('messageForm');
       const newMessageInput = document.getElementById('newMessageInput');
 
-      // Initialize Pusher
-      const pusher = new Pusher('a2155cf1a0ead51bb9f1', {
-        cluster: 'us2',
-        encrypted: true
-      });
+      // Initialize Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyAUywgPsNmXuweuUJuJy8XdViosRT9ROY8",
+        authDomain: "indeginous-d5e94.firebaseapp.com",
+        projectId: "indeginous-d5e94",
+        storageBucket: "indeginous-d5e94.appspot.com",
+        messagingSenderId: "823886594849",
+        appId: "1:823886594849:web:34d9e82e77d03f706b7460",
+        measurementId: "G-SBW7K1RWHR"
+};
+      firebase.initializeApp(firebaseConfig);
 
-      // Subscribe to the 'chatroom' channel
-      const channel = pusher.subscribe('chatroom');
+      // Get a reference to the Firebase Realtime Database
+      const database = firebase.database();
+
+      // Reference to the 'messages' node in the database
+      const messagesRef = database.ref('messages');
 
       // Array to store the messages
       let messages = [];
 
-      // Listen for new messages
-      channel.bind('new-message', function (data) {
-        const newMessage = data.message;
+      // Listen for new messages in real-time
+      messagesRef.on('child_added', function (snapshot) {
+        const newMessage = snapshot.val();
         messages.push(newMessage);
         updateMessageList();
       });
@@ -49,8 +127,8 @@
         e.preventDefault();
         const newMessage = newMessageInput.value.trim();
         if (newMessage !== '') {
-          // Send the new message to the server
-          channel.trigger('client-new-message', {
+          // Push the new message to the database
+          messagesRef.push({
             message: newMessage
           });
           newMessageInput.value = '';
@@ -64,14 +142,10 @@
         // Add each message to the list
         messages.forEach(function (message) {
           const li = document.createElement('li');
-          li.textContent = message;
+          li.textContent = message.message;
           messageList.appendChild(li);
         });
       }
-
-      // Add an initial message
-      messages.push('Welcome to the chat room!');
-      updateMessageList();
     });
   </script>
 </body>
