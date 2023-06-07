@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Indigenous Interact Website</title>
+</head>
+
+<body>
+  <h1>Welcome to the Indigenous Interact Website!</h1>
+
+  <div>
+    <h2>Chat Room</h2>
+    <ul id="messageList"></ul>
+    <form id="messageForm">
+      <input type="text" id="newMessageInput" placeholder="Enter your message">
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const messageList = document.getElementById('messageList');
+      const messageForm = document.getElementById('messageForm');
+      const newMessageInput = document.getElementById('newMessageInput');
+
+      messageForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const newMessage = newMessageInput.value.trim();
+        if (newMessage !== '') {
+          const li = document.createElement('li');
+          li.textContent = newMessage;
+          messageList.appendChild(li);
+          newMessageInput.value = '';
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
